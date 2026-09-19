@@ -1,63 +1,162 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-    <title>🎶AI Audio Enhancer</title>
-
-<link rel="stylesheet" href="/static/style.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PureWave - YouTube Audio Enhancer</title>
+  <meta name="description" content="Improve the audio quality of any YouTube video and download the enhanced version." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
 </head>
-
 <body>
 
-    <div class="container">
-
-        <h1>🎵 AI YouTube Audio Enhancer🎵</h1>
-
-        <p>
-            Improve poor-quality YouTube audio using AI🤖.❤️
-        </p>
-
-        <form method="POST">
-
-            <input
-                type="text"
-                name="youtube_url"
-                placeholder="Paste YouTube URL"
-                required
-            >
-{% if error_message %}
-<div style="background: #ff4444; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; border-radius: 8px;">
-    {{ error_message }}
-</div>
-{% endif %}
-            <button type="submit">
-                Enhance Your Audio
-            </button>
-
-        </form>
-        
-
-        {% if enhanced_ready %}
-
-        <div class="result">
-
-            <h2>Your Enhanced Audio is Ready</h2>
-            <a href="/download/{{ unique_id }}" class="download-btn">Download Enhanced Video</a>
-             
-
+  <div class="page">
+    <div class="wrapper">
+      
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">
+          <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+          </svg>
+          <span class="logo-text">PureWave</span>
         </div>
+        <h1>Enhance YouTube Audio</h1>
+        <p class="subtitle">
+          Paste a YouTube link below. We'll clean up the audio and give you a better-sounding version to download.
+        </p>
+      </header>
 
+      <!-- Main Card -->
+      <div class="card">
+        
+        <!-- Error Banner -->
+        {% if error_message %}
+        <div class="alert-error" role="alert">
+          {{ error_message }}
+        </div>
         {% endif %}
 
+        <!-- Form -->
+        <form method="POST" id="enhanceForm" onsubmit="startLoading()">
+          <label class="field-label" for="youtube_url">YouTube video link</label>
+          <div class="input-row">
+            <input
+              type="url"
+              id="youtube_url"
+              name="youtube_url"
+              placeholder="https://www.youtube.com/watch?v=..."
+              required
+              autocomplete="off"
+            />
+          </div>
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span id="btnText">Enhance Audio</span>
+            <span id="btnLoader" class="hidden">
+              <span class="spinner"></span>Working on it...
+            </span>
+          </button>
+        </form>
+
+        <!-- Progress Steps -->
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-step" id="step1">
+            <span class="dot"></span>
+            <span>Downloading video</span>
+          </div>
+          <div class="progress-step" id="step2">
+            <span class="dot"></span>
+            <span>Extracting audio</span>
+          </div>
+          <div class="progress-step" id="step3">
+            <span class="dot"></span>
+            <span>Cleaning background noise</span>
+          </div>
+          <div class="progress-step" id="step4">
+            <span class="dot"></span>
+            <span>Balancing volume</span>
+          </div>
+          <div class="progress-step" id="step5">
+            <span class="dot"></span>
+            <span>Merging enhanced video</span>
+          </div>
+        </div>
+
+        <!-- Success -->
+        {% if enhanced_ready %}
+        <div class="success-box">
+          <p class="success-title">Your video is ready</p>
+          <p class="success-sub">The audio has been cleaned and re-merged with the original video.</p>
+          <a href="/download/{{ unique_id }}" class="btn-download">
+            Download video
+          </a>
+        </div>
+        {% endif %}
+
+      </div>
+
+      <!-- How it works -->
+      <section class="steps-section">
+        <p class="steps-label">How it works</p>
+        <div class="steps-row">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <strong>Paste a link</strong>
+            <p>Any standard YouTube video URL.</p>
+          </div>
+          <div class="step-divider"></div>
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <strong>Processing</strong>
+            <p>We reduce noise and balance the audio.</p>
+          </div>
+          <div class="step-divider"></div>
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <strong>Download</strong>
+            <p>Get the improved MP4 file.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        Built with Python, Flask &amp; FFmpeg
+      </footer>
+
     </div>
-    
-    </script>
+  </div>
+
+  <script>
+    function startLoading() {
+      var btnText   = document.getElementById('btnText');
+      var btnLoader = document.getElementById('btnLoader');
+      var btn       = document.getElementById('submitBtn');
+      var wrap      = document.getElementById('progressWrap');
+
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+      btn.disabled = true;
+      wrap.classList.add('active');
+
+      var steps  = ['step1','step2','step3','step4','step5'];
+      var delays = [500, 2500, 6000, 11000, 16000];
+
+      steps.forEach(function(id, i) {
+        setTimeout(function() {
+          document.getElementById(id).classList.add('running');
+        }, delays[i]);
+        if (i > 0) {
+          setTimeout(function() {
+            var prev = document.getElementById(steps[i - 1]);
+            prev.classList.remove('running');
+            prev.classList.add('done');
+          }, delays[i]);
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>
-<!-- 
- cd C:\Users\HP\Documents\projects\AI-youtube-audio-enhancer
-python app.py
-http://localhost:5000
--->
