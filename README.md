@@ -1,190 +1,148 @@
-# 🎵 AI YouTube Audio Enhancer
+# 🎵 PureWave: YouTube Audio Enhancer
 
-An AI-powered web application that improves noisy and low-quality YouTube audio using Python-based audio processing techniques.
+> A Python/Flask web application that downloads any YouTube video and returns it with **crystal-clear audio** using **STFT-based spectral noise reduction**.
 
----
-
-## 🚀 Features
-
-* 🎧 Download audio directly from YouTube
-* 🤖 AI-inspired audio enhancement pipeline
-* 🌐 Full-stack Flask web application
-* 🎨 Responsive and modern UI
-* 📥 Download enhanced audio output
-* 🔊 Noise reduction using spectral subtraction
-* ⚡ Fast and lightweight workflow
-* 📂 Organized project structure
-* ❌ Invalid URL handling
-* 💻 Beginner-friendly implementation
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.x-000000?style=flat&logo=flask)
+![Librosa](https://img.shields.io/badge/Librosa-0.10-green?style=flat)
+![FFmpeg](https://img.shields.io/badge/FFmpeg-6.x-orange?style=flat&logo=ffmpeg)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
 ---
 
-## 🛠 Tech Stack
+## ✨ Features
 
-### Frontend
-
-* HTML5
-* CSS3
-
-### Backend
-
-* Python
-* Flask
-
-### Audio Processing / AI
-
-* Librosa
-* NumPy
-* SoundFile
-* yt-dlp
-* FFmpeg
+- 🔗 **Paste any YouTube URL** — yt-dlp handles download automatically
+- 🧠 **Noise Reduction** — Short-Time Fourier Transform (STFT) spectral subtraction removes background hiss and noise
+- 🔊 **Audio Normalization & Boost** — Standardizes levels and applies a 1.2× clarity boost
+- 🎬 **Lossless Video Merge** — FFmpeg copies the original video stream and replaces only the audio track (zero re-encoding quality loss)
+- 📥 **One-click Download** — Get the final enhanced MP4 directly from the browser
+- 🏥 **`/health` endpoint** — Production-ready health check for deployment platforms (Heroku, Railway, Render)
+- 🧹 **Automatic cleanup** — Temporary audio/video files are deleted after processing
 
 ---
 
-## 📂 Project Structure
+## 🛠️ Tech Stack
 
-```txt
-projects/
-│
-├── app.py
-│
-├── templates/
-│   └── index.html
-│
-├── static/
-│   └── style.css
-│
-├── audio/
-│
-├── output/
-│
-├── requirements.txt
-│
-└── README.md
+| Layer | Technology |
+|-------|-----------|
+| Web Framework | Flask (Python) |
+| Audio DSP | Librosa, NumPy, SoundFile |
+| Video Processing | FFmpeg |
+| YouTube Download | yt-dlp |
+| Production Server | Gunicorn |
+| Frontend | HTML5, CSS3, JavaScript |
+
+---
+
+## 🏗️ Architecture
+
+```
+User → Browser (HTML/CSS/JS)
+         │  POST /  (YouTube URL)
+         ▼
+      Flask App (app.py)
+         │
+         ├─ 1. yt-dlp        → downloads/  (raw MP4)
+         ├─ 2. FFmpeg         → audio/input_<id>.wav  (raw WAV)
+         ├─ 3. Librosa/NumPy  → audio/enhanced_<id>.wav (STFT noise reduction)
+         ├─ 4. FFmpeg         → output/enhanced_<id>.mp4 (final video)
+         └─ 5. Cleanup temp files
+         │
+         ▼
+      GET /download/<id>  → send_file(enhanced MP4)
 ```
 
 ---
 
-## ⚙ Installation
+## 🚀 Quick Start
 
-### 1. Clone Repository
+### Prerequisites
+- Python 3.10+
+- FFmpeg installed and on your system `PATH`
+
+### Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/projects.git
+# Clone the repository
+git clone https://github.com/your-username/PureWave-youtube-enhancer.git
+cd PureWave-youtube-enhancer
+
+# Create and activate a virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
----
-
-### 2. Install Dependencies
-
-
-pip install -r requirements.txt
-
-
----
-
-### 3. Install FFmpeg
-
-Download FFmpeg:
-
-https://ffmpeg.org/download.html
-
-Add FFmpeg to system PATH.
-
----
-
-## ▶ Run Project
+### Running Locally
 
 ```bash
 python app.py
 ```
 
-Open browser:
+Open your browser at **http://localhost:5000**
 
+### Running with Gunicorn (Production)
 
-http://127.0.0.1:5000
-
-
----
-
-## 🧠 How It Works
-
-1. User enters a YouTube video URL
-2. Audio is downloaded using yt-dlp
-3. Librosa loads and processes the audio
-4. Spectral subtraction reduces background noise
-5. Enhanced audio is generated
-6. User downloads the improved audio
+```bash
+gunicorn app:app
+```
 
 ---
 
-## 🔬 Audio Enhancement Technique
+## 📁 Project Structure
 
-This project uses spectral subtraction for noise reduction.
-
-### Processing Steps
-
-* Audio is converted into frequency domain using STFT
-* Noise profile is estimated from the initial audio segment
-* Noise frequencies are subtracted
-* Audio is reconstructed using inverse STFT
-
-This improves speech clarity and reduces unwanted noise.
-
----
-
-## 🎨 UI/UX Highlights
-
-* Responsive design
-* Dark-themed interface
-* Interactive buttons
-* Clean layout
-* User-friendly workflow
+```
+PureWave/
+├── app.py              # Flask application (routes, audio pipeline)
+├── requirements.txt    # Python dependencies
+├── Procfile            # Heroku/Railway deployment config
+├── templates/
+│   └── index.html      # Frontend UI
+├── static/
+│   └── style.css       # UI styles
+├── downloads/          # Temp: raw downloaded videos
+├── audio/              # Temp: extracted & enhanced audio
+└── output/             # Final enhanced MP4 files
+```
 
 ---
 
-## 📈 Future Improvements
+## 🔬 How the Audio Processing Works
 
-* Real-time waveform visualization
-* Deep learning enhancement models
-* Drag-and-drop audio upload
-* Audio comparison player
-* Cloud deployment support
-* Live microphone enhancement
-
----
-
-## 📚 Learning Outcomes
-
-Through this project I learned:
-
-* Flask backend development
-* Frontend-backend integration
-* Audio signal processing
-* Noise reduction techniques
-* Git & GitHub workflow
-* Responsive UI design
-* File handling in Python
+1. **Load audio** — Librosa loads the extracted WAV at 44,100 Hz
+2. **STFT** — Convert time-domain signal to frequency domain (Short-Time Fourier Transform)
+3. **Noise floor estimation** — Average the first ~0.5 s of audio as a noise reference
+4. **Spectral subtraction** — Subtract 4× the estimated noise from every frequency bin
+5. **Soft thresholding** — Zero out remaining low-energy components below the 5th percentile
+6. **ISTFT** — Reconstruct the cleaned time-domain signal
+7. **Normalize & boost** — Normalize to peak amplitude, apply a 1.2× gain, clip to prevent distortion
 
 ---
 
-## 💡 Challenges Faced
+## 🌐 Deployment
 
-* Integrating YouTube audio downloading
-* Managing audio file conversions
-* Implementing spectral subtraction
-* Handling audio processing efficiently
-* Configuring FFmpeg dependencies
+The app is ready to deploy on **Heroku**, **Railway**, or **Render** via the included `Procfile`:
+
+```
+web: gunicorn app:app
+```
+
+Set environment variables as needed:
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `5000` | Server port |
+| `FLASK_DEBUG` | `false` | Enable debug mode |
 
 ---
 
-## 👨‍💻 Author
+## 📄 License
 
-### Amit Yadav
+MIT License — feel free to use, modify, and distribute.
 
-Passionate about:
+---
 
-* Software Development
-* AI & ML
-* Web Development
-* Problem Solving
+*Built with ❤️ by [Amit Yadav] · Python · Flask · Librosa · FFmpeg*
