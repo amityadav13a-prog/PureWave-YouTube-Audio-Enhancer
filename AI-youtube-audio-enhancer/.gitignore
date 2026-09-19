@@ -1,0 +1,22 @@
+# Environments
+venv/
+env/
+.env
+__pycache__/
+*.pyc
+
+# Project specific folders for media processing
+downloads/
+audio/
+output/
+video/
+
+# Executables
+ffmpeg.exe
+*.exe
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
